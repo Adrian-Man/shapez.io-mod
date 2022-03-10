@@ -1,0 +1,10 @@
+{
+    "entry": "main.js",
+    "id": "research",
+    "version": "0.1",
+    "name": "Research",
+    "author": "Atrium",
+    "description": "Add Research Library",
+    "website": "https://github.com/Adrian-Man/shapez.io-mod",
+    "settings": {}
+}
