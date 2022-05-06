@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {
     "entry": "main.js",
     "id": "research",
@@ -8,3 +9,16 @@
     "website": "https://github.com/Adrian-Man/shapez.io-mod",
     "settings": {}
 }
+=======
+{
+    "entry": "main.js",
+    "id": "research",
+    "version": "0.1",
+    "name": "Research",
+    "author": "Atrium",
+    "description": "Add Research Library",
+    "website": "https://github.com/Adrian-Man/shapez.io-mod",
+    "settings": {},
+    "modId": "1884461"
+}
+>>>>>>> Stashed changes

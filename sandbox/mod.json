@@ -1,10 +1,19 @@
 {
     "entry": "main.js",
     "id": "sandbox",
+<<<<<<< Updated upstream
     "version": "1.0",
+=======
+    "version": "1.0.1",
+>>>>>>> Stashed changes
     "name": "Sandbox",
     "author": "Atrium",
     "description": "Add Sandbox mode",
     "website": "https://github.com/Adrian-Man/shapez.io-mod",
+<<<<<<< Updated upstream
     "settings": {}
+=======
+    "settings": {},
+    "modId": "1875086"
+>>>>>>> Stashed changes
 }

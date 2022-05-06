@@ -7,7 +7,10 @@ import { Blueprint } from "shapez/game/blueprint";
 import { RegularGameMode } from "shapez/game/modes/regular";
 
 import { MetaBuilding } from "shapez/game/meta_building";
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 import { MetaConstantProducerBuilding } from "shapez/game/buildings/constant_producer";
 import { MetaGoalAcceptorBuilding } from "shapez/game/buildings/goal_acceptor";
 import { MetaBlockBuilding } from "shapez/game/buildings/block";
@@ -55,7 +58,11 @@ class ModImpl extends Mod {
     }
 }
 
+<<<<<<< Updated upstream
 const SandboxExtension = ({ $super, $old }) => ({
+=======
+const SandboxExtension = ({ $old }) => ({
+>>>>>>> Stashed changes
     //Edit the layout
     createElements(parent) {
         this.element = makeDiv(
@@ -188,6 +195,10 @@ const SandboxExtension = ({ $super, $old }) => ({
     //Edited, change F6 to modifiable keymap
     initialize() {
         // Allow toggling the controller overlay
+<<<<<<< Updated upstream
+=======
+        // @ts-ignore
+>>>>>>> Stashed changes
         this.root.keyMapper.getBinding(KEYMAPPINGS.mods.menuOpenSandbox).add(() => this.toggle());
 
         this.visible = false;
