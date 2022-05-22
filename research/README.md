@@ -14,6 +14,7 @@ enumHubGoalRewards.reward_example = "reward_example";
 const research = {
     key: {
         building: typeof MetaBuilding,
+        buildingVariant: defaultBuildingVariant,
         reward: enumHubGoalRewards.reward_example,
         title: string,
         desc: string,
