@@ -1,6 +1,6 @@
 import { InputReceiver } from "shapez/core/input_receiver";
 import { formatBigNumber, makeDiv } from "shapez/core/utils";
-import { T } from "shapez/translations";
+import { createLogger } from "shapez/core/logging";
 import { KeyActionMapper, KEYMAPPINGS } from "shapez/game/key_action_mapper";
 import { BaseHUDPart } from "shapez/game/hud/base_hud_part";
 import { DynamicDomAttach } from "shapez/game/hud/dynamic_dom_attach";
@@ -8,12 +8,16 @@ import { gMetaBuildingRegistry } from "shapez/core/global_registries";
 import { MetaBuilding } from "shapez/game/meta_building";
 import { ModInterface } from "shapez/mods/mod_interface";
 import { keyToKeyCode } from "shapez/game/key_action_mapper";
+//testing research
 // import { RESEARCH_VARIANTS } from "./researchDict";
-// NOTE ---- A lot of this is copied code from SI. Sue me, I don't care
+
+// A lot of this is copied code from SI. Credit to Sense101
+
+export const research_logger = createLogger("Research");
 
 const RESEARCH_VARIANTS = {};
 
-export class HUDResearch extends BaseHUDPart {
+class HUDAnalysis extends BaseHUDPart {
     createElements(parent) {
         this.background = makeDiv(parent, "ingame_HUD_Research", ["ingameDialog"]);
 
@@ -25,8 +29,7 @@ export class HUDResearch extends BaseHUDPart {
         this.contentDiv = makeDiv(this.dialogInner, null, ["content"]);
         // DIALOG Inner / Wrapper
 
-        this.root.signals.storyGoalCompleted.add((level, reward) => {
-        }, this);
+        this.root.signals.storyGoalCompleted.add((level, reward) => {}, this);
 
         this.researchVariants = RESEARCH_VARIANTS;
         this.variantToElements = {};
@@ -40,8 +43,6 @@ export class HUDResearch extends BaseHUDPart {
             this.contentDiv.removeChild(this.contentDiv.lastChild);
         }
         this.variantToElements = {};
-        console.log('rerenderFull researchVariants', this.researchVariants);
-        console.log('rerenderFull researchedVariants', this.researchedVariants);
         // now, create new elements
         var variants = [];
 
@@ -54,13 +55,13 @@ export class HUDResearch extends BaseHUDPart {
                 const bString = bMetaBuilding.getId();
                 if (!(this.isResearchCompleted(a) - this.isResearchCompleted(b)) && !(aString > bString)) {
                     return -1;
-                }
-                else {
+                } else {
                     return this.isResearchCompleted(a) - this.isResearchCompleted(b);
                 }
             });
         }
 
+        //create element one by one
         for (let i = 0; i < variants.length; i++) {
             const variant = variants[i];
             const { building, reward, title, desc, amount } = this.researchVariants[variant];
@@ -76,7 +77,6 @@ export class HUDResearch extends BaseHUDPart {
             // Title
             makeDiv(handle.elem, null, ["title"], title);
 
-
             // Description
             handle.elemDescription = makeDiv(handle.elem, null, ["description"], desc);
             handle.elemRequirements = makeDiv(handle.elem, null, ["requirements"]);
@@ -87,31 +87,32 @@ export class HUDResearch extends BaseHUDPart {
             handle.icon.setAttribute("data-id", metaBuilding.getId());
             makeDiv(handle.icon, null, ["icon"]);
 
-            ///*
-            // Building Sprite, cant figure rendering
-            // const iconSize = 64;
-            // const dimensions = metaBuilding.getDimensions(buildingVariant);
-            // const sprite = metaBuilding.getPreviewSprite(0, buildingVariant);
-            // handle.icon = makeDiv(handle.elem, null, ["iconWrap"]);
-            // handle.icon.setAttribute("data-tile-w", String(dimensions.x));
-            // handle.icon.setAttribute("data-tile-h", String(dimensions.y));
-            // handle.icon.innerHTML = sprite.getAsHTML(iconSize * dimensions.x, iconSize * dimensions.y);
-            // handle.icon.setAttribute("data-id", metaBuilding.getId());
-            // makeDiv(handle.icon, null, ["icon"]);
-            //*/
+            /*
+            Building Sprite as icon,
+            const iconSize = 64;
+            const dimensions = metaBuilding.getDimensions(buildingVariant);
+            const sprite = metaBuilding.getPreviewSprite(0, buildingVariant);
+            handle.icon = makeDiv(handle.elem, null, ["iconWrap"]);
+            handle.icon.setAttribute("data-tile-w", String(dimensions.x));
+            handle.icon.setAttribute("data-tile-h", String(dimensions.y));
+            handle.icon.innerHTML = sprite.getAsHTML(iconSize * dimensions.x, iconSize * dimensions.y);
+            handle.icon.setAttribute("data-id", metaBuilding.getId());
+            makeDiv(handle.icon, null, ["icon"]);
+            */
 
             // Buy button
             handle.buyButton = document.createElement("button");
             handle.buyButton.classList.add("buy", "styledButton");
             handle.buyButton.innerText = "Research";
+            research_logger.log("handle.elem.appendChild");
             handle.elem.appendChild(handle.buyButton);
 
             this.trackClicks(handle.buyButton, () => {
+                // @ts-ignore
                 this.root.hud.parts.unlockNotification.showForLevel(0, reward, title, desc);
-                console.log('buy button before register', this.root.hubGoals.gainedRewards);
                 this.root.hubGoals.gainedRewards[reward] = 1;
-                console.log('buy button after register', this.root.hubGoals.gainedRewards);
                 this.researchedVariants.push(variant);
+                research_logger.log("Research Completed", this.researchedVariants);
                 this.usedResearchPoint = this.usedResearchPoint + amount;
                 this.rerenderFull();
             });
@@ -149,9 +150,11 @@ export class HUDResearch extends BaseHUDPart {
             const progressContainer = makeDiv(container, null, ["amount"]);
             const progressBar = document.createElement("label");
             progressBar.classList.add("progressBar");
+            research_logger.log("progressContainer.appendChild(progressBar)");
             progressContainer.appendChild(progressBar);
 
             const progressLabel = document.createElement("label");
+            research_logger.log("progressContainer.appendChild(progressLabel)");
             progressContainer.appendChild(progressLabel);
 
             handle.requireIndexToElement.push({
@@ -160,17 +163,17 @@ export class HUDResearch extends BaseHUDPart {
                 progressBar,
                 required: amount,
             });
-
         }
     }
 
     renderCountsAndStatus() {
         for (const variant in this.variantToElements) {
             const handle = this.variantToElements[variant];
-            let hasShapes = true;
+            let canResearch = true;
             for (let i = 0; i < handle.requireIndexToElement.length; ++i) {
                 const { progressLabel, progressBar, required } = handle.requireIndexToElement[i];
 
+                // @ts-ignore
                 const haveAmount = this.root.hubGoals.getLevel() - this.usedResearchPoint;
                 const progress = Math.min(haveAmount / required, 1.0);
 
@@ -178,11 +181,11 @@ export class HUDResearch extends BaseHUDPart {
                 progressBar.style.width = progress * 100.0 + "%";
                 progressBar.classList.toggle("complete", progress >= 1.0);
                 if (progress < 1.0) {
-                    hasShapes = false;
+                    canResearch = false;
                 }
             }
 
-            handle.buyButton.classList.toggle("buyable", hasShapes);
+            handle.buyButton.classList.toggle("buyable", canResearch);
         }
     }
 
@@ -196,7 +199,7 @@ export class HUDResearch extends BaseHUDPart {
 
         this.keyActionMapper.getBinding(KEYMAPPINGS.general.back).add(this.close, this);
         this.keyActionMapper.getBinding(KEYMAPPINGS.ingame.menuClose).add(this.close, this);
-        this.keyActionMapper.getBinding(KEYMAPPINGS.mods.menuOpenResearch).add(this.close, this);
+        this.keyActionMapper.getBindingById("menuOpenResearch").add(this.close, this);
 
         this.close();
 
@@ -241,7 +244,7 @@ export class HUDResearch extends BaseHUDPart {
 
     addResearch(variant) {
         Object.assign(this.researchVariants, variant);
-        console.log('addResearch', this.researchVariants);
+        research_logger.log("Add Research", Object.keys(this.researchVariants));
     }
 
     isResearchCompleted(variant) {
@@ -252,24 +255,36 @@ export class HUDResearch extends BaseHUDPart {
         let available = 0;
         for (const variant in this.variantToElements) {
             const handle = this.variantToElements[variant];
-            let hasShapes = true;
+            let canResearch = true;
             for (let i = 0; i < handle.requireIndexToElement.length; ++i) {
                 const { required } = handle.requireIndexToElement[i];
 
+                // @ts-ignore
                 const haveAmount = this.root.hubGoals.getLevel() - this.usedResearchPoint;
                 const progress = haveAmount / required;
                 if (progress < 1.0) {
-                    hasShapes = false;
+                    canResearch = false;
                 }
             }
             if (!handle.requireIndexToElement.length) {
-                hasShapes = false;
+                canResearch = false;
             }
-            if (hasShapes) {
+            if (canResearch) {
                 available++;
             }
         }
         return available;
+    }
+
+    unlockAllResearch() {
+        for (const variant in this.researchVariants) {
+            const { reward } = this.researchVariants[variant];
+            if (!this.researchedVariants.includes(variant)) {
+                this.root.hubGoals.gainedRewards[reward] = 1;
+                this.researchedVariants.push(variant);
+                research_logger.log("Research Completed", this.researchedVariants);
+            }
+        }
     }
 }
 
@@ -284,8 +299,8 @@ export function addHUDResearch(modInterface) {
         keyCode: keyToKeyCode("H"),
         translation: "Researchs",
     });
-
+    research_logger.log("Registered Research keybinding");
     //Register research hud
-    modInterface.registerHudElement("research", HUDResearch);
-
+    modInterface.registerHudElement("research", HUDAnalysis);
+    research_logger.log("Registered Research HUD");
 }

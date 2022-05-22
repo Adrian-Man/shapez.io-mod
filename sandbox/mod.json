@@ -1,10 +1,11 @@
 {
     "entry": "main.js",
     "id": "sandbox",
-    "version": "1.0",
+    "version": "1.1",
     "name": "Sandbox",
     "author": "Atrium",
     "description": "Add Sandbox mode",
     "website": "https://github.com/Adrian-Man/shapez.io-mod",
-    "settings": {}
+    "settings": {},
+    "modId": "1875086"
 }

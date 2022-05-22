@@ -7,7 +7,6 @@ import { Blueprint } from "shapez/game/blueprint";
 import { RegularGameMode } from "shapez/game/modes/regular";
 
 import { MetaBuilding } from "shapez/game/meta_building";
-
 import { MetaConstantProducerBuilding } from "shapez/game/buildings/constant_producer";
 import { MetaGoalAcceptorBuilding } from "shapez/game/buildings/goal_acceptor";
 import { MetaBlockBuilding } from "shapez/game/buildings/block";
@@ -35,6 +34,27 @@ class ModImpl extends Mod {
             translation: "Sandbox Options",
         });
 
+        //Edit the layout
+        this.modInterface.registerCss(`
+        #ingame_HUD_SandboxController .plusMinus {
+            @include S(margin-top, 4px);
+            display: grid;
+            grid-template-columns: 1fr auto auto auto auto;
+            align-items: center;
+            @include S(grid-gap, 4px);
+
+            button {
+            @include PlainText;
+            @include S(padding, 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            @include S(width, 15px);
+            @include S(height, 15px);
+            @include IncreasedClickArea(0px);
+        }
+        `);
+
         this.modInterface.extendClass(HUDSandboxController, SandboxExtension);
 
         this.modInterface.registerHudElement("sandbox_controller", HUDSandboxController);
@@ -43,20 +63,19 @@ class ModImpl extends Mod {
     itemProducer() {
         //Remove itemProducer from the list
         /** @type {(typeof MetaBuilding)[]} */
-        const hiddenBuildings = [
-            MetaConstantProducerBuilding,
-            MetaGoalAcceptorBuilding,
-            MetaBlockBuilding,
-        ];
-        
-        this.modInterface.replaceMethod(RegularGameMode, "isBuildingExcluded", function ($original, [building]) {
-            return hiddenBuildings.indexOf(building) >= 0;
-        })
+        const hiddenBuildings = [MetaConstantProducerBuilding, MetaGoalAcceptorBuilding, MetaBlockBuilding];
+
+        this.modInterface.replaceMethod(
+            RegularGameMode,
+            "isBuildingExcluded",
+            function ($original, [building]) {
+                return hiddenBuildings.indexOf(building) >= 0;
+            }
+        );
     }
 }
 
-const SandboxExtension = ({ $super, $old }) => ({
-    //Edit the layout
+const SandboxExtension = ({ $old }) => ({
     createElements(parent) {
         this.element = makeDiv(
             parent,
@@ -70,10 +89,6 @@ const SandboxExtension = ({ $super, $old }) => ({
                     <label>Level</label>
                     <button class="styledButton minus">-</button>
                     <button class="styledButton plus">+</button>
-                </div>
-
-                <div class="levelToggle plusMinus">
-                    <label> </label>
                     <button class="styledButton minus_50">--</button>
                     <button class="styledButton plus_50">++</button>
                 </div>
@@ -82,10 +97,6 @@ const SandboxExtension = ({ $super, $old }) => ({
                     <label> Belt</label>
                     <button class="styledButton minus">-</button>
                     <button class="styledButton plus">+</button>
-                </div>
-
-                <div class="upgradesBelt plusMinus">
-                    <label> </label>
                     <button class="styledButton minus_50">--</button>
                     <button class="styledButton plus_50">++</button>
                 </div>
@@ -94,10 +105,6 @@ const SandboxExtension = ({ $super, $old }) => ({
                     <label> Extraction</label>
                     <button class="styledButton minus">-</button>
                     <button class="styledButton plus">+</button>
-                </div>
-
-                <div class="upgradesExtraction plusMinus">
-                    <label> </label>
                     <button class="styledButton minus_50">--</button>
                     <button class="styledButton plus_50">++</button>
                 </div>
@@ -106,10 +113,6 @@ const SandboxExtension = ({ $super, $old }) => ({
                     <label> Processing</label>
                     <button class="styledButton minus">-</button>
                     <button class="styledButton plus">+</button>
-                </div>
-
-                <div class="upgradesProcessing plusMinus">
-                    <label> </label>
                     <button class="styledButton minus_50">--</button>
                     <button class="styledButton plus_50">++</button>
                 </div>
@@ -118,10 +121,6 @@ const SandboxExtension = ({ $super, $old }) => ({
                     <label> Painting</label>
                     <button class="styledButton minus">-</button>
                     <button class="styledButton plus">+</button>
-                </div>
-
-                <div class="upgradesPainting plusMinus">
-                    <label> </label>
                     <button class="styledButton minus_50">--</button>
                     <button class="styledButton plus_50">++</button>
                 </div>
@@ -129,6 +128,7 @@ const SandboxExtension = ({ $super, $old }) => ({
                 <div class="additionalOptions">
                     <button class="styledButton maxOutUpgrade">Max out upgrade</button>
                     <button class="styledButton resetUpgrade">Reset upgrade</button>
+                    <button class="styledButton unlockResearch">Unlock all Research</button>
                 </div>
             </div>
         `
@@ -138,6 +138,7 @@ const SandboxExtension = ({ $super, $old }) => ({
 
         bind(".maxOutUpgrade", this.maxOutUpgrade);
         bind(".resetUpgrade", this.resetUpgrade);
+        bind(".unlockResearch", () => this.root.hud.parts.research.unlockAllResearch());
         bind(".levelToggle .minus", () => this.modifyLevel(-1));
         bind(".levelToggle .plus", () => this.modifyLevel(1));
 
@@ -188,10 +189,10 @@ const SandboxExtension = ({ $super, $old }) => ({
     //Edited, change F6 to modifiable keymap
     initialize() {
         // Allow toggling the controller overlay
+        // @ts-ignore
         this.root.keyMapper.getBinding(KEYMAPPINGS.mods.menuOpenSandbox).add(() => this.toggle());
 
         this.visible = false;
         this.domAttach = new DynamicDomAttach(this.root, this.element);
-    }
-})
-
+    },
+});

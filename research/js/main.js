@@ -1,22 +1,22 @@
 import { Mod } from "shapez/mods/mod";
-import { addHUDResearch } from "./researchShop";
-import { GameMenuExtension } from "./game_menu_ext";
+import { ModInterface } from "shapez/mods/mod_interface";
+import { addHUDResearch, research_logger } from "./researchShop";
+import { postCreateMenuElements } from "./game_menu_ext";
+import { showForLevelReplace } from "./unlock_notification_ext";
 import { HUDGameMenu } from "shapez/game/hud/parts/game_menu";
 import { HubGoals } from "shapez/game/hub_goals";
-import { replaceGoalExplanations } from "./unlock_notification_ext";
-import { ModInterface } from "shapez/mods/mod_interface";
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+import { HUDUnlockNotification } from "shapez/game/hud/parts/unlock_notification";
 
 ModInterface.prototype["addResearch"] = addResearch;
+
 class ModImpl extends Mod {
     init() {
-
         // Add research hud
         addHUDResearch(this.modInterface);
-        this.modInterface.extendClass(HUDGameMenu, GameMenuExtension);
-        // this.modInterface.extendClass(ModInterface, ModInterfaceExtension);
+        // this.modInterface.extendClass(HUDGameMenu, GameMenuExtension);
         this.modInterface.extendClass(HubGoals, HubGoalsExtension);
-        replaceGoalExplanations(this.modInterface);
+        this.modInterface.replaceMethod(HUDUnlockNotification, "showForLevel", showForLevelReplace);
+        this.modInterface.runAfterMethod(HUDGameMenu, "createElements", postCreateMenuElements);
         this.saveGainedRewards();
     }
 
@@ -32,45 +32,35 @@ class ModImpl extends Mod {
                 root.hubGoals.gainedRewards = gainedRewards;
                 var variants = [];
 
-                if (Object.keys(root.hud.parts.research.researchVariants).length){
+                if (Object.keys(root.hud.parts.research.researchVariants).length) {
                     variants = Object.keys(root.hud.parts.research.researchVariants);
                 }
 
                 for (let i = 0; i < variants.length; i++) {
-                    const { reward } = root.hud.parts.research.researchVariants[variants[i]];
+                    const { reward, amount } = root.hud.parts.research.researchVariants[variants[i]];
                     // check to see if we already researched it
                     if (gainedRewards[reward]) {
                         root.hud.parts.research.researchedVariants.push(variants[i]);
-                   }
-                   root.hud.parts.research.rerenderFull();
+                        root.hud.parts.research.usedResearchPoint += amount;
+                    }
                 }
-                
+                // root.hud.parts.research.rerenderFull();
             }
         });
     }
 }
 
-const HubGoalsExtension = ({ $old }) => ({
-    getLevel(){
+const HubGoalsExtension = ({ $super, $old }) => ({
+    getLevel() {
         return this.level;
-    }
-})
+    },
+});
 
 /**
  * @this {any}
  */
-function addResearch(variants){
-    this.modLoader.signals.hudInitializer.add(root => {
+function addResearch(variants) {
+    this.modLoader.signals.gameInitialized.add(root => {
         root.hud.parts.research.addResearch(variants);
-        console.log('addResearch', root.hud.parts.research.researchVariants)
     });
 }
-
-// const ModInterfaceExtension = ({ $old }) => ({
-//     addResearch(variants){
-//         console.log('mod interface addResearch');
-//         this.modLoader.signals.gameDeserialized.add(root => {
-//             root.hud.parts.research.addResearch(variants);
-//         })
-//     }
-// })

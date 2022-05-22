@@ -1,5 +1,4 @@
 /* MIXINS */
-
 @mixin DarkThemeOverride {
     @at-root html[data-theme="dark"] &,
         &[data-theme="dark"] {
@@ -31,7 +30,8 @@
 // Helper method to scale a property value
 @mixin S($propName, $v1, $v2: "", $v3: "", $v4: "", $important: false) {
     $impSuffix: "";
-    @if $important == true {
+
+    @if $important==true {
         $impSuffix: "!important";
     }
 
@@ -44,6 +44,7 @@
     @if $v3 != "" {
         $v3: D($v3);
     }
+
     @if $v4 != "" {
         $v4: D($v4);
     }
@@ -82,8 +83,10 @@
     > button,
     > .button {
         font-size: 6px !important;
+
         &.research {
             grid-column: 1;
+
             & {
                 /* @load-async */
                 background-image: url("../res/ui/research.png");
@@ -161,6 +164,7 @@ $darkModeControlsBackground: darken(#535866, 5);
                 align-items: center;
                 flex-direction: row-reverse;
                 justify-content: flex-end;
+
                 @include DarkThemeOverride {
                     color: #fff;
                 }
@@ -191,6 +195,7 @@ $darkModeControlsBackground: darken(#535866, 5);
                 }
             }
 
+            // Building sprite as icon
             // .iconWrap {
             //     grid-column: 1 / 2;
             //     grid-row: 2 / 3;
@@ -237,7 +242,7 @@ $darkModeControlsBackground: darken(#535866, 5);
                         @include S(height, 35px);
                         background: center center / contain no-repeat;
                         background-image: url("../res/ui/research_shop.png") !important;
-                    };
+                    }
 
                     .amount {
                         flex: auto;
@@ -309,6 +314,7 @@ $darkModeControlsBackground: darken(#535866, 5);
                         50% {
                             background-color: lighten($colorGreenBright, 10);
                         }
+
                         100% {
                         }
                     }

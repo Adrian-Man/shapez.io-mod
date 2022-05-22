@@ -1,0 +1,31 @@
+$icons: (belt_crossing);
+
+$tutorial_images: (
+    balancer-mergerAll,
+    balancer-mergerSide,
+    balancer-splitterAll,
+    balancer-splitterSide,
+    belt_crossing-corner,
+    belt_crossing-switcher,
+    belt_crossing,
+    filter-reverse,
+    mixer-smart,
+    stacker-reverse,
+    stacker-smart,
+    storage-valve,
+);
+
+@each $building in $icons {
+    [data-icon="building_icons/#{$building}.png"] {
+        .icon {
+            background-image: url("../res/ui/#{$building}.png") !important;
+        }
+    }
+}
+
+@each $building in $tutorial_images {
+    [data-icon="building_tutorials/#{$building}.png"] {
+        /* @load-async */
+        background-image: url("../res/ui/building_tutorials/#{$building}.png") !important;
+    }
+}

@@ -2,12 +2,13 @@ import { defaultBuildingVariant, MetaBuilding } from "shapez/game/meta_building"
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { MetaRotaterBuilding } from "shapez/game/buildings/rotater";
 import { MetaCutterBuilding } from "shapez/game/buildings/cutter";
-import { MetaPainterBuilding , enumPainterVariants} from "shapez/game/buildings/painter";
-import { MetaBalancerBuilding , enumBalancerVariants} from "shapez/game/buildings/balancer";
+import { MetaPainterBuilding, enumPainterVariants } from "shapez/game/buildings/painter";
+import { MetaBalancerBuilding, enumBalancerVariants } from "shapez/game/buildings/balancer";
 import { MetaMinerBuilding } from "shapez/game/buildings/miner";
 import { MetaUndergroundBeltBuilding } from "shapez/game/buildings/underground_belt";
 import { MetaFilterBuilding } from "shapez/game/buildings/filter";
 
+// random research entry for testing
 export const RESEARCH_VARIANTS = {
     balancerSmartMerger: {
         building: MetaBalancerBuilding,

@@ -37,7 +37,11 @@ declare const desiredMsDelay: number;
 declare let lastTick: number;
 declare module "shapez/core/config.local" {
     namespace _default {
+<<<<<<< Updated upstream
         export const externalModUrl: string;
+=======
+        export const externalModUrl: string[];
+>>>>>>> Stashed changes
     }
     export default _default;
 }
