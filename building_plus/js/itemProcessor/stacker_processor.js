@@ -1,32 +1,34 @@
-import { MOD_ITEM_PROCESSOR_HANDLERS, MODS_CAN_PROCESS, MODS_PROCESSING_REQUIREMENTS, ItemProcessorSystem } from "shapez/game/systems/item_processor";
+import {
+    MOD_ITEM_PROCESSOR_HANDLERS,
+    MODS_CAN_PROCESS,
+    MODS_PROCESSING_REQUIREMENTS,
+    ItemProcessorSystem,
+} from "shapez/game/systems/item_processor";
 import { MOD_ITEM_PROCESSOR_SPEEDS } from "shapez/game/hub_goals";
 import { enumItemProcessorTypes } from "shapez/game/components/item_processor";
 import { isTruthyItem } from "shapez/game/items/boolean_item";
 
-export const stackerItemProcessor = {smart_stacker : "smart_stacker"};
+export const stackerItemProcessor = { smart_stacker: "smart_stacker" };
 
 export function registerStackerItemProcessor() {
     // smart stacker
     // Declare the processing speed
     Object.assign(MOD_ITEM_PROCESSOR_SPEEDS, {
-        smart_stacker: (root) => (
-            root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.stacker)
-        )
+        smart_stacker: root => root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.stacker),
     });
 
     // Declare a handler for the processor
     /**  @this ItemProcessorSystem */
-    MOD_ITEM_PROCESSOR_HANDLERS.smart_stacker = function (payload) { 
-        console.log("ITEM_PROCESSOR_HANDLERS")
+    MOD_ITEM_PROCESSOR_HANDLERS.smart_stacker = function (payload) {
         const pinsComp = payload.entity.components.WiredPins;
         const slotStatus = getSlotStatus(pinsComp);
 
-        const baseItem = (payload.items.get(slotStatus[0]));
+        const baseItem = payload.items.get(slotStatus[0]);
 
         let outDefinition = baseItem.definition;
         for (let i = 1; i < slotStatus.length; i++) {
             const item = payload.items.get(slotStatus[i]);
-            
+
             outDefinition = this.root.shapeDefinitionMgr.shapeActionStack(outDefinition, item.definition);
         }
 
@@ -42,18 +44,15 @@ export function registerStackerItemProcessor() {
         const network = pinsComp.slots[input.slotIndex].linkedNetwork;
         const slotIsEnabled = network && network.hasValue() && isTruthyItem(network.currentValue);
         return slotIsEnabled;
-    }
+    };
 
     // Can process if all shape of the enabled slots are there
     MODS_CAN_PROCESS.smart_stacker = function (input) {
         const pinsComp = input.entity.components.WiredPins;
         const processorComp = input.entity.components.ItemProcessor;
-        console.log(processorComp)
         const slotStatus = getSlotStatus(pinsComp);
-        console.log(slotStatus)
         // All slots are disabled
         if (slotStatus.length == 0) {
-            console.log("CANT_PROCESS")
             return false;
         }
         // Check if all shape of the enabled slots are there
@@ -63,7 +62,7 @@ export function registerStackerItemProcessor() {
             }
         }
         return true;
-    }
+    };
 }
 
 function getSlotStatus(pinsComp) {

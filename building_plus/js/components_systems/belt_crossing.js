@@ -82,7 +82,7 @@ export class BeltCrossingSystem extends GameSystemWithFilter {
     }
 }
 
-export function registerBeltCrossingComponent(modInterface){
+export function registerBeltCrossingComponent(modInterface) {
     modInterface.registerComponent(BeltCrossingComponent);
     modInterface.registerGameSystem({
         id: "beltCrossing",

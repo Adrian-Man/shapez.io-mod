@@ -1,18 +1,20 @@
-import { MOD_ITEM_PROCESSOR_HANDLERS, MODS_CAN_PROCESS, MODS_PROCESSING_REQUIREMENTS } from "shapez/game/systems/item_processor";
+import {
+    MOD_ITEM_PROCESSOR_HANDLERS,
+    MODS_CAN_PROCESS,
+    MODS_PROCESSING_REQUIREMENTS,
+} from "shapez/game/systems/item_processor";
 import { MOD_ITEM_PROCESSOR_SPEEDS } from "shapez/game/hub_goals";
 import { enumItemProcessorTypes } from "shapez/game/components/item_processor";
 import { enumColors } from "shapez/game/colors";
 import { COLOR_ITEM_SINGLETONS } from "shapez/game/items/color_item";
 
-export const mixerItemProcessor = {smart_mixer:"smart_mixer"};
+export const mixerItemProcessor = { smart_mixer: "smart_mixer" };
 
 export function registerMixerItemProcessor() {
     // smart mixer
     // Declare the processing speed
     Object.assign(MOD_ITEM_PROCESSOR_SPEEDS, {
-        smart_mixer: (root) => (
-            root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.mixer)
-        )
+        smart_mixer: root => root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.mixer),
     });
 
     // output the signal
@@ -29,7 +31,7 @@ export function registerMixerItemProcessor() {
             return false;
         }
         return true;
-    }
+    };
 
     // Can process if signal == color
     MODS_CAN_PROCESS.smart_mixer = function (input) {
@@ -39,11 +41,11 @@ export function registerMixerItemProcessor() {
             const network = Comp.WiredPins.slots[0].linkedNetwork;
             if (network) {
                 const value = network.currentValue;
-                if (value.getItemType() == "color" && value.color != enumColors.uncolored) {
+                if (value && value.getItemType() == "color" && value.color != enumColors.uncolored) {
                     return true;
-                };
+                }
             }
         }
         return false;
-    }
+    };
 }

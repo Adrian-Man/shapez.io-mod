@@ -5,8 +5,8 @@ import numpy as np
 from scipy import ndimage
 from PIL import Image, ImageFilter, ImageChops
 import math
-from os import listdir
-from os.path import isdir, isfile
+from os import listdir, chdir
+from os.path import isdir, isfile, dirname
 
 generate_blueprint_sprite_v = np.array([[0, 0, 0],
                             [0, 1, 0],
@@ -81,7 +81,7 @@ def generate_blueprint_sprite(infilename, outfilename):
     output_image = np.sqrt(np.square(horizontal) + np.square(vertical))
     process_image(output_image, outfilename, img)
 
-
+chdir(dirname(__file__))
 buildings = listdir("buildings")
 
 for buildingId in buildings:

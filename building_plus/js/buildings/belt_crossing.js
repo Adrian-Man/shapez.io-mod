@@ -17,9 +17,9 @@ export const enumBeltCrossingVariants = { corner: "corner", switcher: "switcher"
 
 /** @enum {string} */
 export const enumBeltCrossingResearch = {
-    reward_belt_crossing : "reward_belt_crossing",
-    reward_corner_crossing : "reward_corner_crossing",
-    reward_line_crossing : "reward_line_crossing",
+    reward_belt_crossing: "reward_belt_crossing",
+    reward_corner_crossing: "reward_corner_crossing",
+    reward_line_crossing: "reward_line_crossing",
 };
 
 const overlayMatrices = {
@@ -116,10 +116,11 @@ export class MetaBeltCrossingBuilding extends MetaBuilding {
      * @param {GameRoot} root
      */
     getIsUnlocked(root) {
-        return root.hubGoals.isRewardUnlocked(enumBeltCrossingResearch.reward_belt_crossing) ||
+        return (
+            root.hubGoals.isRewardUnlocked(enumBeltCrossingResearch.reward_belt_crossing) ||
             root.hubGoals.isRewardUnlocked(enumBeltCrossingResearch.reward_corner_crossing) ||
             root.hubGoals.isRewardUnlocked(enumBeltCrossingResearch.reward_line_crossing)
-            ;
+        );
     }
 
     /**
@@ -127,13 +128,9 @@ export class MetaBeltCrossingBuilding extends MetaBuilding {
      * @param {Entity} entity
      */
     setupEntityComponents(entity) {
-        entity.addComponent(
-            new ItemAcceptorComponent({ slots: [], })
-        );
+        entity.addComponent(new ItemAcceptorComponent({ slots: [] }));
 
-        entity.addComponent(
-            new ItemEjectorComponent({ slots: [], renderFloatingItems: false, })
-        );
+        entity.addComponent(new ItemEjectorComponent({ slots: [], renderFloatingItems: false }));
 
         entity.addComponent(new BeltCrossingComponent());
 
@@ -200,13 +197,15 @@ export class MetaBeltCrossingBuilding extends MetaBuilding {
                 break;
             }
             default:
-                assertAlways(false, "Unknown balancer variant: " + variant);
+                assertAlways(false, "Unknown belt crossing variant: " + variant);
         }
     }
 }
 
 export function addBeltCrossing(modInterface) {
-    modInterface.registerNewBuilding({ metaClass: MetaBeltCrossingBuilding });
+    modInterface.registerNewBuilding({
+        metaClass: MetaBeltCrossingBuilding,
+    });
 
     // add building to toolbar, infront of balancer
     modInterface.addNewBuildingToToolbar({

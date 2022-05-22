@@ -15,8 +15,8 @@ export class ValveComponent extends StorageComponent {
      * @param {number=} param0.maximumStorage How much this storage can hold
      */
     constructor({ maximumStorage = 1e20 }) {
-        super({maximumStorage});
-     }
+        super({ maximumStorage });
+    }
 }
 
 export class ValveSystem extends GameSystemWithFilter {
@@ -105,15 +105,15 @@ export class ValveSystem extends GameSystemWithFilter {
             const context = parameters.context;
             context.globalAlpha = valveComp.overlayOpacity;
             const center = staticComp.getTileSpaceBounds().getCenter().toWorldSpace();
-            storedItem.drawItemCenteredClipped(center.x + 0.2, center.y - 0.3, parameters, 16);
+            storedItem.drawItemCenteredClipped(center.x + 0.2, center.y - 0.3, parameters, 17);
 
-            this.storageOverlaySprite.drawCached(parameters, center.x - 10, center.y + 7, 20, 10);
+            this.storageOverlaySprite.drawCached(parameters, center.x - 9, center.y + 4.5, 18, 10);
 
-            if (parameters.visibleRect.containsCircle(center.x, center.y + 25, 20)) {
+            if (parameters.visibleRect.containsCircle(center.x, center.y, 20)) {
                 context.font = "bold 6px GameFont";
                 context.textAlign = "center";
                 context.fillStyle = "#64666e";
-                context.fillText(formatBigNumber(valveComp.storedCount), center.x, center.y + 14);
+                context.fillText(formatBigNumber(valveComp.storedCount), center.x, center.y + 11.5);
                 context.textAlign = "left";
             }
             context.globalAlpha = 1;
@@ -121,7 +121,7 @@ export class ValveSystem extends GameSystemWithFilter {
     }
 }
 
-export function registerValveComponent(modInterface){
+export function registerValveComponent(modInterface) {
     modInterface.registerComponent(ValveComponent);
     modInterface.registerGameSystem({
         id: "valve",
